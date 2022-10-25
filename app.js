@@ -1,16 +1,11 @@
 //imports
-const http = require('http');
-// const events = require('events')
 const express = require('express'); // building web application and API
 const mysql = require('mysql');
 const fs = require('fs');
-// const exp = require('constants');
+
 
 const port = process.env.PORT || 3000 ;
 const app = express(); // this is our app or instance of express
-
-// --Events
-// const emmiter = new events.EventEmitter();
 
 
 // ----- Static Files
@@ -19,7 +14,7 @@ app.use('/css', express.static(__dirname+'public/css'))
 app.use('/js', express.static(__dirname+'public/js'))
 app.use('/img', express.static(__dirname+'public/img'))
 
-// Api Midlewares
+//--- Api Midlewares
 app.use(express.json()); // this is to accept data in json format
 app.use(express.urlencoded()); // to decode the data send thoruh html form 
 
@@ -37,9 +32,6 @@ app.get('/about',(req, res)=>{
     res.render('about', {text: 'About Page'})
 })
 
-// app.get('',(req,res)=>{  //sends a file to display it in the browser
-//     res.sendFile(__dirname+'/views/index.html')
-// })
 
 var mysqlConnection = mysql.createConnection({
     host:'myclients.mysql.database.azure.com',
@@ -48,7 +40,7 @@ var mysqlConnection = mysql.createConnection({
     database: 'helloclient',
     port: 3306,
     ssl:{
-        ca:fs.readFileSync('BaltimoreCyberTrustRoot.crt.pem')
+        ca:fs.readFileSync('BaltimoreCyberTrustRoot.crt.pem') // ssl authentication enforced 
         }
 });
  //connect and check for errors
@@ -59,7 +51,7 @@ mysqlConnection.connect((err)=>{
     console.log('Db connection failed \n Error: '+JSON.stringify(err, undefined, 2));
 });
 
-// ---- Send information 
+// ---- Send information from the form 
 app.post('/submit', function(req,res){
     console.log(req.body);
 
@@ -68,7 +60,7 @@ app.post('/submit', function(req,res){
                 if (err) throw err;
             else {
                 console.log('Inserted '+ results.affectedRows+'row(s).');
-                res.render('index', {text: 'This is ejs'});
+                res.render('about', {text: 'Thank you'});
                 }  
     });
 
@@ -80,7 +72,7 @@ app.post('/submit', function(req,res){
     });
 
 });
-
+// To consult the data
 app.get('/consult', function(req, res){
     mysqlConnection.query('SELECT * FROM people',
         function(err,results,fields){
